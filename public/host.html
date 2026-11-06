@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12070b">
+  <title>Langur Burja · Host</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body data-mode="host">
+  <div class="app">
+    <header class="topbar panel">
+      <div class="brand">
+        <div class="logo">👑</div>
+        <div><h1>Langur Burja</h1><small>Host · House bank</small></div>
+      </div>
+      <div class="round">
+        <span id="roundNo"></span>
+        <span id="phaseBadge" class="phase"></span>
+        <span id="countdown" class="countdown" hidden></span>
+      </div>
+      <div class="top-right">
+        <div class="pill"><span>Bank</span><b id="topBank">रु 0</b></div>
+        <button id="muteBtn" class="icon-btn" title="Sound on/off"></button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <div id="canvasWrap" class="canvas-wrap"></div>
+      <div id="banner" class="banner"></div>
+    </main>
+
+    <section class="board panel">
+      <div class="board-head">
+        <h3>Bets on the table</h3>
+        <div><b id="tableTotal">रु 0</b> · <span id="betCount">0/0</span> players betting</div>
+      </div>
+      <div id="tiles" class="tiles"></div>
+    </section>
+
+    <aside class="side">
+      <div class="panel">
+        <button id="primaryBtn" class="btn primary huge">Start Round</button>
+        <label class="toggle"><input type="checkbox" id="autoPlay"><span></span>Auto-play next rounds</label>
+        <div class="field-row">
+          <label>Betting timer (sec, 0 = manual roll)<input id="betSecs" type="number" min="0" max="300"></label>
+          <label>Money for new players<input id="startBal" type="number" min="0" step="100"></label>
+        </div>
+      </div>
+
+      <div class="panel wallet">
+        <div class="bal-label">House bank</div>
+        <div id="bankBal" class="bal">रु 0</div>
+        <div class="field-row">
+          <input id="bankAmt" type="number" value="5000" step="500" min="0" aria-label="Amount">
+          <button id="bankAdd" class="btn">+ Add</button>
+          <button id="bankSub" class="btn ghost">− Remove</button>
+        </div>
+      </div>
+
+      <div class="panel invite">
+        <h3>Invite players</h3>
+        <img id="qr" alt="QR code to join" hidden>
+        <div id="urls"></div>
+        <p class="muted">Players on the same Wi-Fi can scan the code or open the link. Tap a link to copy it.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Last rounds</h3>
+        <ul id="history" class="history"></ul>
+      </div>
+
+      <button id="resetBtn" class="btn danger">Reset whole game</button>
+    </aside>
+
+    <aside class="players panel">
+      <h3>Players <span id="playerCount" class="count">0</span></h3>
+      <p id="emptyPlayers" class="muted">Waiting for players to join… Tap a player to give or take money.</p>
+      <ul id="playerList" class="player-list"></ul>
+    </aside>
+  </div>
+
+  <div id="manageModal" class="modal" hidden>
+    <div class="modal-card">
+      <div id="mAvatar" class="big-av" style="margin:0 auto"></div>
+      <h2 id="mName"></h2>
+      <p class="muted">Balance: <b id="mBal" style="color:var(--gold2)"></b></p>
+      <input id="mAmt" type="number" value="500" step="100" min="0" aria-label="Amount">
+      <div class="manage-actions">
+        <button id="mGive" class="btn primary">Give from bank</button>
+        <button id="mTake" class="btn">Take to bank</button>
+        <button id="mKick" class="btn danger">Remove player</button>
+      </div>
+      <button id="mClose" class="link" style="margin-top:14px">Close</button>
+    </div>
+  </div>
+
+  <div id="loginModal" class="modal">
+    <form id="loginForm" class="modal-card">
+      <div class="modal-dice">👑</div>
+      <h2>Host login</h2>
+      <p class="muted">Enter the host password to control the game</p>
+      <input id="pwInput" type="password" placeholder="Host password" autocomplete="current-password" enterkeyhint="go">
+      <p id="loginError" class="login-error" hidden></p>
+      <button class="btn primary big" type="submit" style="margin-top:16px">Unlock host controls</button>
+      <a class="link" href="/" style="display:inline-block;margin-top:14px">Join as a player instead</a>
+    </form>
+  </div>
+
+  <div id="conn" class="conn" hidden>Lost connection to the server…</div>
+  <div id="toasts" class="toasts"></div>
+  <div id="fx" class="fx"></div>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12070b">
+  <title>Langur Burja</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body data-mode="player">
+  <div class="app">
+    <header class="topbar panel">
+      <div class="brand">
+        <div class="logo">🎲</div>
+        <div><h1>Langur Burja</h1><small>झण्डी मुण्डा · Khorkhore</small></div>
+      </div>
+      <div class="round">
+        <span id="roundNo"></span>
+        <span id="phaseBadge" class="phase"></span>
+        <span id="countdown" class="countdown" hidden></span>
+      </div>
+      <div class="top-right">
+        <div class="pill"><span>Balance</span><b id="topBalance">रु 0</b></div>
+        <button id="muteBtn" class="icon-btn" title="Sound on/off"></button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <div id="canvasWrap" class="canvas-wrap"></div>
+      <div id="banner" class="banner"></div>
+    </main>
+
+    <section class="board panel">
+      <div class="chipbar">
+        <div id="chips" class="chips"></div>
+        <div class="bet-actions">
+          <button id="repeatBtn" class="btn ghost">↻ Repeat</button>
+          <button id="clearBtn" class="btn ghost">✕ Clear</button>
+        </div>
+      </div>
+      <div id="tiles" class="tiles"></div>
+    </section>
+
+    <aside class="side">
+      <div class="panel wallet">
+        <div class="who">
+          <span id="meAvatar" class="big-av">🐵</span>
+          <div>
+            <div id="meName" class="me-name">—</div>
+            <button id="leaveBtn" class="link">change name / avatar</button>
+          </div>
+        </div>
+        <div class="bal-label">Your balance</div>
+        <div id="meBalance" class="bal">रु 0</div>
+        <div class="stats">
+          <div><span>Bet this round</span><b id="meOnTable">रु 0</b></div>
+          <div><span>Profit / loss</span><b id="meTotal">रु 0</b></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Last rounds</h3>
+        <ul id="history" class="history"></ul>
+      </div>
+
+      <details class="panel rules">
+        <summary>How to play</summary>
+        <ol>
+          <li>Pick a chip, then tap a symbol to bet. Tap again to add more. You can bet on several symbols.</li>
+          <li>The host rolls <b>6 dice</b>.</li>
+          <li>If your symbol lands on <b>2 or more</b> dice, you win your bet × that number, and you get your bet back.</li>
+          <li>If it lands on 0 or 1 dice, the bank keeps your bet.</li>
+        </ol>
+        <div class="payout">
+          <div><b>×2</b>2 dice</div><div><b>×3</b>3 dice</div><div><b>×4</b>4 dice</div>
+          <div><b>×5</b>5 dice</div><div><b>×6</b>6 dice</div><div><b>✕</b>0–1 dice</div>
+        </div>
+      </details>
+    </aside>
+
+    <aside class="players panel">
+      <h3>Players <span id="playerCount" class="count">0</span></h3>
+      <p id="emptyPlayers" class="muted">Nobody here yet</p>
+      <ul id="playerList" class="player-list"></ul>
+    </aside>
+  </div>
+
+  <div id="joinModal" class="modal" hidden>
+    <form id="joinForm" class="modal-card">
+      <div class="modal-dice">🎲</div>
+      <h2>Langur Burja</h2>
+      <p class="muted">Enter your name and pick an avatar to join the table</p>
+      <input id="nameInput" maxlength="16" placeholder="Your name" autocomplete="off" enterkeyhint="go">
+      <div id="avatarGrid" class="avatar-grid"></div>
+      <button class="btn primary big" type="submit">Join the table</button>
+    </form>
+  </div>
+
+  <div id="conn" class="conn" hidden>Reconnecting to the host…</div>
+  <div id="toasts" class="toasts"></div>
+  <div id="fx" class="fx"></div>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
