@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#131735">
+  <title>Ludo 3D</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body data-phase="lobby">
+  <div id="stage" class="stage"></div>
+
+  <header class="topbar">
+    <div class="brand"><span class="logo">🎲</span><h1>Ludo<span>3D</span></h1></div>
+    <div class="tools">
+      <button id="resetViewBtn" class="icon" title="Reset camera">🎯</button>
+      <button id="viewBtn" class="icon" title="Top-down view">🗺️</button>
+      <button id="themeBtn" class="icon" title="Day / night"></button>
+      <button id="muteBtn" class="icon" title="Sound"></button>
+      <button id="menuBtn" class="icon" title="Menu">☰</button>
+    </div>
+  </header>
+
+  <div id="status" class="status"></div>
+  <div id="hint" class="hint"></div>
+
+  <div class="card" id="card-0" hidden><div class="inner"></div></div>
+  <div class="card" id="card-1" hidden><div class="inner"></div></div>
+  <div class="card" id="card-2" hidden><div class="inner"></div></div>
+  <div class="card" id="card-3" hidden><div class="inner"></div></div>
+
+  <div class="action">
+    <div id="diceBadge" class="dice-badge"></div>
+    <button id="rollBtn" class="roll" hidden><span>🎲</span>ROLL</button>
+  </div>
+
+  <div id="emotes" class="emotes"></div>
+  <div id="feed" class="feed"></div>
+
+  <!-- lobby -->
+  <section id="lobby" class="overlay lobby">
+    <div class="panel">
+      <div class="lobby-head">
+        <h2>Ludo<span>3D</span></h2>
+        <button id="meChip" class="me-chip"></button>
+      </div>
+      <p class="sub">Pick a colour. Friends can join from <b>their own phones</b> on the same Wi-Fi (📱 Invite), or play <b>on this device with you</b> (tap "+ Friend here" on another colour). Empty seats? Add a bot!</p>
+      <div id="seats" class="seats"></div>
+      <div class="lobby-foot">
+        <button id="inviteBtn" class="btn">📱 Invite</button>
+        <div class="start-wrap">
+          <button id="startBtn" class="btn big solid">Start game ▶</button>
+          <small id="startHint"></small>
+        </div>
+      </div>
+      <div id="invite" class="invite" hidden>
+        <img id="qr" alt="Scan to join" hidden>
+        <div><p>Scan the code or open:</p><div id="urls"></div></div>
+      </div>
+      <details class="rules">
+        <summary>How to play</summary>
+        <ul>
+          <li>Roll a <b>6</b> to bring a pawn out of your yard.</li>
+          <li>Move around the board and into your coloured home lane. You need an exact roll to finish.</li>
+          <li>Land on an opponent to <b>knock them back</b> to their yard. ⭐ Star squares and start squares are safe.</li>
+          <li>Rolling a 6, capturing, or reaching home gives you a <b>bonus roll</b>. Three 6s in a row lose the turn.</li>
+          <li>First to bring all 4 pawns home wins!</li>
+          <li><b>Grab the dice and flick it</b> to throw (or just tap it). <b>Drag your buddy</b> onto the glowing square (or tap it).</li>
+          <li>Tap any character to poke it. They giggle and dance… and get grumpy if you overdo it 😠</li>
+          <li>Drag the empty board to rotate, pinch or scroll to zoom. 🌙 switches to night mode. On a computer, <b>Space</b> rolls and <b>1–4</b> moves a buddy.</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- results -->
+  <section id="results" class="overlay" hidden>
+    <div class="panel results">
+      <h2 id="winTitle"></h2>
+      <div id="podium" class="podium-row"></div>
+      <button id="againBtn" class="btn big solid">Play again 🔁</button>
+    </div>
+  </section>
+
+  <!-- profile -->
+  <section id="profile" class="overlay modal" hidden>
+    <form id="profileForm" class="panel small">
+      <h2 id="profileTitle">Who's playing?</h2>
+      <p id="profileSub" class="sub" hidden>Playing together on this one phone or laptop? Add your friend here. You'll take turns on the same screen, and the camera turns to whoever's turn it is.</p>
+      <input id="nameInput" maxlength="14" placeholder="Your name" autocomplete="off" enterkeyhint="done">
+      <div id="avatarGrid" class="avatar-grid"></div>
+      <button class="btn big solid" type="submit">Let's go!</button>
+      <button id="profileClose" class="link" type="button">Cancel</button>
+    </form>
+  </section>
+
+  <!-- menu -->
+  <section id="menu" class="overlay modal" hidden>
+    <div class="panel small">
+      <h2>Menu</h2>
+      <form id="resetForm" class="reset">
+        <p>End the current game and go back to the lobby (host only).</p>
+        <input id="pwInput" type="password" placeholder="Host password" autocomplete="current-password">
+        <button class="btn danger" type="submit">End game</button>
+      </form>
+      <button id="menuClose" class="link" type="button">Close</button>
+    </div>
+  </section>
+
+  <div id="toasts" class="toasts"></div>
+  <div id="conn" class="conn" hidden>Reconnecting…</div>
+  <div id="fx" class="fx"></div>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

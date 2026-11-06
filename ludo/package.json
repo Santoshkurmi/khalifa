@@ -1,0 +1,19 @@
+{
+  "name": "ludo-3d",
+  "version": "1.0.0",
+  "description": "LAN multiplayer 3D Ludo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.22.3",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.4",
+    "three": "^0.160.0"
+  }
+}
